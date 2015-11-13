@@ -1,0 +1,20 @@
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Coalesced permissions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+	<input type = 'button' id = 'notify' value = "Notify me when I'm near coffee">
+</body>
+
+<script>
+
+document.getElementById('notify').onclick = function() {
+    navigator.permissions.requestAll([{name:'geolocation'}, {name:'notifications'}]);	
+};
+
+</script>
+
+</htmL>
