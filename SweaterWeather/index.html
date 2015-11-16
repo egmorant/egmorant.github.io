@@ -1,0 +1,189 @@
+<!--
+Copyright 2015 Google Inc. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sweater Weather</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="components/webcomponentsjs/webcomponents-lite.min.js"></script>
+	
+	<link rel="manifest" href="manifest.json">
+	<link rel="import" href="components/iron-ajax/iron-ajax.html">
+	<link rel="import" href="components/iron-icon/iron-icon.html">
+	<link rel="import" href="components/iron-icons/image-icons.html">
+	<link rel="import" href="components/iron-icons/iron-icons.html">
+	<link rel="import" href="components/iron-icons/maps-icons.html">
+	<link rel="import" href="components/iron-icons/communication-icons.html">
+	<link rel="import" href="components/paper-styles/color.html">
+	<link rel = "import" href ="components/paper-toggle-button/paper-toggle-button.html">
+	<link rel = "import" href ="components/paper-icon-button/paper-icon-button.html">
+	<link rel="import" href="components/iron-flex-layout/classes/iron-flex-layout.html">
+	
+	<link rel ="import" href = "shared-styles.html">
+	<style is="custom-style" include="shared-styles"></style>
+	
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+  </head>
+
+  <body class="fit vertical layout center-center">
+	  
+	  <h1>Wear a Sweater!</h1>
+	  <img id="clothing-icon" src="bluesweater.png"/>
+	  
+	  <div class = "horizontal justified layout">
+	  <h3>61°F in San Francisco</h3>	  
+	  <paper-icon-button icon = "communication:location-on" id = "geo"></paper-icon-button> 
+  		</div>
+	  
+	  <div class = "horizontal justified layout">
+	  <h4>Notify me when it's T-shirt weather</h4>
+	  <paper-toggle-button id = "notify"></paper-toggle-button>
+	  </div>
+	  
+<!-- <script src = "js/main.js"></script> -->
+
+    <script>  
+
+var geoButton = document.getElementById('geo');
+var notifyButton = document.getElementById('notify');
+
+//check onload status of geolocation permission		 
+navigator.permissions.query({name:'geolocation'}).then(function(result){	
+	if (result.state == 'denied'){
+		geoButton.setAttribute("icon","communication:location-off");
+		geoButton.style.color = "grey";
+	}
+	else if (result.state == 'prompt'){
+		geoButton.setAttribute("icon","communication:location-on");
+		geoButton.style.color = "grey";
+	}
+	else {
+		geoButton.setAttribute("icon","communication:location-on");
+		geoButton.style.color = "rgb(62,81,181)";
+	}
+	
+});
+
+//check onload status of notifications permission
+navigator.permissions.query({name:'notifications'}).then(function(result){	
+	if (result.state == 'denied'){
+		notifyButton.disabled = true;
+		notifyButton.checked = false; 		
+		notifyButton.style.color = "grey";
+	}
+	else if (result.state == 'prompt'){
+		notifyButton.disabled = false;
+		notifyButton.checked = false; 
+		notifyButton.style.color = "grey";		
+	}
+	else { //result = enabled
+		notifyButton.disabled = false;
+		notifyButton.checked = true; 
+		notifyButton.style.color = "rgb(62,81,181)";		
+	}
+	
+});
+
+//Listen for when location button is clicked  
+	 geoButton.addEventListener('click', function(){
+		 navigator.permissions.query({name:'geolocation'}).then(function(result){
+			 if (result.state == 'granted'){
+				 //Revoke location
+	 			 navigator.permissions.revoke({name:'geolocation'});
+			 } else if (result.state == 'prompt'){
+				 //Prompt for geolocation
+				 navigator.permissions.request({name:'geolocation'});
+			 } else if (result.state == 'denied'){
+				 //Fall back to San Francisco as default location
+			 }
+			 
+			 //When a choice is made, update UI accordingly 
+			 result.onchange = function (){
+				if (result.state == 'granted'){
+					// Query for location
+					// onsole.log(position.coords.latitude, position.coords.longitude);
+			 		geoButton.setAttribute("icon","communication:location-on");
+			 		geoButton.style.color = "rgb(62,81,181)";
+				
+				 } else if (result.state == 'prompt'){
+					//Fall back to San Francisco as default location
+ 			 		geoButton.setAttribute("icon","communication:location-on");
+			 		geoButton.style.color = "grey";
+				
+				 } else if (result.state == 'denied'){
+					//Fall back to San Francisco as default location
+			 		geoButton.setAttribute("icon","communication:location-off");
+					geoButton.style.color = "grey";	
+					 
+				 };				 
+			 }
+			}) 
+		  });
+		  
+//listen for when the permissions state has changed on an ongoing basis (do I need the onclick listener if I have this?)
+		  navigator.permissions.query({name:'geolocation'}).then(function(result){
+		  			  result.onchange = function(){
+		    			  	if (result.state == 'denied'){
+		    			  		geoButton.setAttribute("icon","communication:location-off");
+		    			  		geoButton.style.color = "grey";
+		    			  	}
+		    			  	else if (result.state == 'prompt'){
+		    			  		geoButton.setAttribute("icon","communication:location-on");
+		    			  		geoButton.style.color = "grey";
+		    			  	}
+		    			  	else {
+		    			  		geoButton.setAttribute("icon","communication:location-on");
+		    			  		geoButton.style.color = "rgb(62,81,181)";
+		    			  	}
+
+		  			  }});
+
+//Listen for when notifications are toggled
+	 var notifyButton = notifyButton;
+	 notifyButton.addEventListener('change', function(){
+		 if (this.checked){
+	      	navigator.permissions.request({name:'notifications'});	
+		 } else{
+		 	navigator.permissions.revoke({name:'notifications'});
+		 }		 
+	 });
+
+//Listen for when notifications state is changed
+ navigator.permissions.query({name:'notifications'}).then(function(result){	
+ 		result.onchange = function(){
+  	if (result.state == 'denied'){
+		notifyButton.disabled = true;	
+		notifyButton.checked = false;	
+  	}
+	else if (result.state == 'prompt'){
+		notifyButton.disabled = false;
+		notifyButton.checked = false;
+	}	
+	else{//granted
+		notifyButton.disabled = false;
+		notifyButton.checked = true;
+	}	
+		
+	}
+
+
+ });	 
+	   
+  
+    </script>
+  
+  
+  </body>
+</html>
