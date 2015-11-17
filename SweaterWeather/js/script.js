@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
       } else if (result.state == 'denied') {
         // Fall back to San Francisco as default location.
     }   
+    
     // When a choice is made, update UI accordingly. 
     result.onchange = function () {
       if (result.state == 'granted') {
@@ -63,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
     }
   }); 
  });
-
 
   // Listen for when notifications are toggled.
   notifyButton.addEventListener('change', function() {
