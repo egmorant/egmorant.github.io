@@ -37,7 +37,6 @@ navigator.permissions.query({name:'notifications'}).then(function(result){
 });
 
 // Listen for when location button is clicked.  
-
 document.addEventListener('DOMContentLoaded', function(event){
  geoButton.addEventListener('click', function(){
   navigator.permissions.query({name:'geolocation'}).then(function(result){
@@ -69,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function(event){
   }
  }) 
  });
-
 });
     
 // Listen for when the geolocation permissions state has changed on an ongoing basis.
@@ -90,14 +88,14 @@ navigator.permissions.query({name:'geolocation'}).then(function(result){
 }});
 
 // Listen for when notifications are toggled.
-var notifyButton = notifyButton;
-notifyButton.addEventListener('change', function(){
- if (this.checked) {
-  navigator.permissions.request({name:'notifications'}); 
- } else {
- navigator.permissions.revoke({name:'notifications'});
- }   
-});
+document.addEventListener('DOMContentLoaded', function(event){
+ notifyButton.addEventListener('change', function(){
+  if (this.checked) {
+   navigator.permissions.request({name:'notifications'}); 
+  } else {
+  navigator.permissions.revoke({name:'notifications'});
+  } 
+}});
 
 // Listen for when the notifications permissions state has changed on an ongoing basis. 
 navigator.permissions.query({name:'notifications'}).then(function(result){ 
@@ -114,6 +112,5 @@ navigator.permissions.query({name:'notifications'}).then(function(result){
    notifyButton.disabled = false;
    notifyButton.checked = false;
   } 
-}
-});  
+}});  
     
